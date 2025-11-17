@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>价格监测管理后台</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 20px auto; 
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+        
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+            position: relative;
+        }
+        .header h1 { margin: 0; font-size: 2.5em; font-weight: 600; }
+        .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 1.1em; }
+        
+        .admin-header { 
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+        
+        .nav-bar { 
+            background: var(--light-color); 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .nav-links { 
+            display: flex; 
+            gap: 15px; 
+        }
+        
+        .nav-link { 
+            text-decoration: none; 
+            color: var(--primary-color); 
+            padding: 8px 16px; 
+            border-radius: var(--border-radius); 
+            transition: background 0.3s; 
+        }
+        
+        .nav-link:hover { 
+            background: #e9ecef; 
+        }
+        
+        .admin-link { 
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            background: rgba(255, 255, 255, 0.2); 
+            color: white; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            text-decoration: none; 
+            font-size: 14px; 
+            transition: all 0.3s; 
+        }
+        
+        .admin-link:hover { 
+            background: rgba(255, 255, 255, 0.3); 
+            transform: scale(1.05); 
+        }
+        
+        .main-content { 
+            padding: 30px; 
+        }
+        
+        .admin-panel { 
+            display: none; 
+        }
+        
+        .admin-panel.active { 
+            display: block; 
+        }
+        
+        .panel-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid #e9ecef; 
+        }
+        
+        .panel-title { 
+            font-size: 1.5em; 
+            color: var(--dark-color); 
+            margin: 0; 
+        }
+        
+        .btn { 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: var(--border-radius); 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 500; 
+            transition: all 0.3s; 
+        }
+        
+        .btn-primary { 
+            background: var(--primary-color); 
+            color: white; 
+        }
+        
+        .btn-success { 
+            background: var(--success-color); 
+            color: white; 
+        }
+        
+        .btn-danger { 
+            background: var(--danger-color); 
+            color: white; 
+        }
+        
+        .btn-warning { 
+            background: var(--warning-color); 
+            color: white; 
+        }
+        
+        .btn:hover { 
+            opacity: 0.9; 
+            transform: translateY(-2px); 
+        }
+        
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        
+        .form-label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 500; 
+            color: #495057; 
+        }
+        
+        .form-control { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 1px solid #ced4da; 
+            border-radius: var(--border-radius); 
+            font-size: 16px; 
+            transition: border-color 0.3s; 
+        }
+        
+        .form-control:focus { 
+            outline: none; 
+            border-color: var(--primary-color); 
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25); 
+        }
+        
+        .form-row { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 15px; 
+        }
+        
+        .form-col { 
+            flex: 1; 
+        }
+        
+        .product-list { 
+            background: white; 
+            border-radius: var(--border-radius); 
+            box-shadow: var(--box-shadow); 
+            overflow: hidden; 
+        }
+        
+        .product-list-header { 
+            background: #f8f9fa; 
+            padding: 15px 20px; 
+            font-weight: 500; 
+            border-bottom: 1px solid #e9ecef; 
+        }
+        
+        .product-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 20px; 
+            border-bottom: 1px solid #f0f0f0; 
+        }
+        
+        .product-item:last-child { 
+            border-bottom: none; 
+        }
+        
+        .product-info { 
+            flex: 1; 
+        }
+        
+        .product-brand { 
+            font-weight: bold; 
+            color: var(--primary-color); 
+        }
+        
+        .product-name { 
+            color: #495057; 
+        }
+        
+        .product-actions { 
+            display: flex; 
+            gap: 10px; 
+        }
+        
+        .action-btn { 
+            padding: 6px 12px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            transition: all 0.3s; 
+        }
+        
+        .edit-btn { 
+            background: var(--warning-color); 
+            color: white; 
+        }
+        
+        .delete-btn { 
+            background: var(--danger-color); 
+            color: white; 
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-group {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 10px;
+            min-width: 150px;
+        }
+        
+        .tab-group-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+            text-align: center;
+        }
+        
+        .tab-links {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .tab-link {
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .tab-link:hover {
+            background: #e9ecef;
+        }
+        
+        .tab-link.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .tab-content { 
+            display: none; 
+        }
+        
+        .tab-content.active { 
+            display: block; 
+        }
+        
+        .message { 
+            padding: 15px; 
+            border-radius: var(--border-radius); 
+            margin-bottom: 20px; 
+        }
+        
+        .message.success { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
+        }
+        
+        .message.error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
+        }
+        
+        .back-to-search { 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            color: var(--primary-color); 
+            text-decoration: none; 
+            font-weight: 500; 
+        }
+        
+        .back-to-search:hover { 
+            text-decoration: underline; 
+        }
+        
+        .loading { 
+            text-align: center; 
+            padding: 50px; 
+            color: #6c757d; 
+            font-size: 1.1em; 
+        }
+        
+        .loading::after { 
+            content: ''; 
+            display: inline-block; 
+            width: 16px; 
+            height: 16px; 
+            border: 2px solid #ccc; 
+            border-top-color: var(--primary-color); 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin-left: 10px; 
+        }
+        
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
+        }
+        
+        /* 优化导航栏布局 */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab-group {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .nav-tab-group-title {
+            padding: 8px 12px;
+            background: #e9ecef;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            color: var(--dark-color);
+            font-size: 0.9em;
+        }
+        
+        .nav-tab {
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+        
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header admin-header">
+            <h1>⚙️ 价格监测管理后台</h1>
+            <p>管理品牌/品类/产品清单，管理平台/店铺阵地</p>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-tabs">
+                <div class="nav-tab-group">
+                    <div class="nav-tab-group-title">产品配置</div>
+                    <div class="nav-tab active" onclick="showTab('brands')">品牌管理</div>
+                    <div class="nav-tab" onclick="showTab('categories')">品类管理</div>
+                    <div class="nav-tab" onclick="showTab('products')">产品管理</div>
+                </div>
+                
+                <div class="nav-tab-group">
+                    <div class="nav-tab-group-title">阵地配置</div>
+                    <div class="nav-tab" onclick="showTab('platforms')">平台管理</div>
+                    <div class="nav-tab" onclick="showTab('stores')">店铺管理</div>
+                </div>
+            </div>
+            
+            <a href="javascript:void(0)" class="back-to-search" onclick="goToSearch()">← 返回搜索页</a>
+        </div>
+        
+        <div class="main-content">
+            <!-- 消息显示区域 -->
+            <div id="messageArea"></div>
+            
+            <!-- 品牌管理标签页 -->
+            <div id="brands" class="tab-content active">
+                <div class="panel-header">
+                    <h2 class="panel-title">品牌管理</h2>
+                    <button class="btn btn-primary" onclick="showAddBrandForm()">添加品牌</button>
+                </div>
+                
+                <div id="addBrandForm" class="form-group" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">品牌名称</label>
+                            <input type="text" id="brandName" class="form-control" placeholder="请输入品牌名称">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">品牌描述</label>
+                            <input type="text" id="brandDescription" class="form-control" placeholder="请输入品牌描述">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="addBrand()">保存品牌</button>
+                        <button class="btn btn-warning" onclick="hideAddBrandForm()">取消</button>
+                    </div>
+                </div>
+                
+                <div class="product-list">
+                    <div class="product-list-header">
+                        品牌列表 (共 <span id="brandCount">0</span> 个品牌)
+                    </div>
+                    <div id="brandsList">
+                        <!-- 品牌列表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 品类管理标签页 -->
+            <div id="categories" class="tab-content">
+                <div class="panel-header">
+                    <h2 class="panel-title">品类管理</h2>
+                    <button class="btn btn-primary" onclick="showAddCategoryForm()">添加品类</button>
+                </div>
+                
+                <div id="addCategoryForm" class="form-group" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">品类名称</label>
+                            <input type="text" id="categoryName" class="form-control" placeholder="请输入品类名称">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">品类描述</label>
+                            <input type="text" id="categoryDescription" class="form-control" placeholder="请输入品类描述">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="addCategory()">保存品类</button>
+                        <button class="btn btn-warning" onclick="hideAddCategoryForm()">取消</button>
+                    </div>
+                </div>
+                
+                <div class="product-list">
+                    <div class="product-list-header">
+                        品类列表 (共 <span id="categoryCount">0</span> 个品类)
+                    </div>
+                    <div id="categoriesList">
+                        <!-- 品类列表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 产品管理标签页 -->
+            <div id="products" class="tab-content">
+                <div class="panel-header">
+                    <h2 class="panel-title">产品管理</h2>
+                    <button class="btn btn-primary" onclick="showAddProductForm()">添加产品</button>
+                </div>
+                
+                <div id="addProductForm" class="form-group" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">品牌</label>
+                            <select id="productBrand" class="form-control">
+                                <option value="">请选择品牌</option>
+                                <!-- 品牌选项将通过JavaScript动态生成 -->
+                            </select>
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">产品名称</label>
+                            <input type="text" id="productName" class="form-control" placeholder="请输入产品名称">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">产品分类</label>
+                            <input type="text" id="productCategory" class="form-control" placeholder="请输入产品分类（如：手机、平板、笔记本等）">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">基础价格</label>
+                            <input type="number" id="productBasePrice" class="form-control" placeholder="请输入基础价格">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="addProduct()">保存产品</button>
+                        <button class="btn btn-warning" onclick="hideAddProductForm()">取消</button>
+                    </div>
+                </div>
+                
+                <div class="product-list">
+                    <div class="product-list-header">
+                        产品列表 (共 <span id="productCount">0</span> 个产品)
+                    </div>
+                    <div id="productsList">
+                        <!-- 产品列表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 平台管理标签页 -->
+            <div id="platforms" class="tab-content">
+                <div class="panel-header">
+                    <h2 class="panel-title">平台管理</h2>
+                    <button class="btn btn-primary" onclick="showAddPlatformForm()">添加平台</button>
+                </div>
+                
+                <div id="addPlatformForm" class="form-group" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">平台名称</label>
+                            <input type="text" id="platformName" class="form-control" placeholder="请输入平台名称（如：京东、天猫、抖音等）">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">平台类型</label>
+                            <select id="platformType" class="form-control">
+                                <option value="线上">线上</option>
+                                <option value="线下">线下</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="addPlatform()">保存平台</button>
+                        <button class="btn btn-warning" onclick="hideAddPlatformForm()">取消</button>
+                    </div>
+                </div>
+                
+                <div class="product-list">
+                    <div class="product-list-header">
+                        平台列表 (共 <span id="platformCount">0</span> 个平台)
+                    </div>
+                    <div id="platformsList">
+                        <!-- 平台列表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 店铺管理标签页 -->
+            <div id="stores" class="tab-content">
+                <div class="panel-header">
+                    <h2 class="panel-title">店铺管理</h2>
+                    <button class="btn btn-primary" onclick="showAddStoreForm()">添加店铺</button>
+                </div>
+                
+                <div id="addStoreForm" class="form-group" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">平台</label>
+                            <select id="storePlatform" class="form-control">
+                                <option value="">请选择平台</option>
+                                <!-- 平台选项将通过JavaScript动态生成 -->
+                            </select>
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">店铺名称</label>
+                            <input type="text" id="storeName" class="form-control" placeholder="请输入店铺名称（如：官方旗舰店、品类旗舰店等）">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">店铺类型</label>
+                            <select id="storeType" class="form-control">
+                                <option value="官方旗舰店">官方旗舰店</option>
+                                <option value="品类旗舰店">品类旗舰店</option>
+                                <option value="KA线上店">KA线上店</option>
+                                <option value="专卖店">专卖店</option>
+                                <option value="专营店">专营店</option>
+                                <option value="直营店">直营店</option>
+                                <option value="体验店">体验店</option>
+                                <option value="第三方店铺">第三方店铺</option>
+                            </select>
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">描述</label>
+                            <input type="text" id="storeDescription" class="form-control" placeholder="请输入店铺描述">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="addStore()">保存店铺</button>
+                        <button class="btn btn-warning" onclick="hideAddStoreForm()">取消</button>
+                    </div>
+                </div>
+                
+                <div class="product-list">
+                    <div class="product-list-header">
+                        店铺列表 (共 <span id="storeCount">0</span> 个店铺)
+                    </div>
+                    <div id="storesList">
+                        <!-- 店铺列表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据库存储
+        let brands = [
+            { id: 1, name: "苹果", description: "Apple Inc." },
+            { id: 2, name: "华为", description: "Huawei Technologies" },
+            { id: 3, name: "小米", description: "Xiaomi Corporation" },
+            { id: 4, name: "荣耀", description: "Honor Device" },
+            { id: 5, name: "OPPO", description: "OPPO Mobile" },
+            { id: 6, name: "vivo", description: "vivo Mobile" },
+            { id: 7, name: "三星", description: "Samsung Electronics" },
+            { id: 8, name: "联想", description: "Lenovo Group" }
+        ];
+        
+        let products = [
+            { id: 1, brandId: 1, name: "iPhone17", category: "手机", basePrice: 7999 },
+            { id: 2, brandId: 1, name: "iPhone16", category: "手机", basePrice: 6999 },
+            { id: 3, brandId: 1, name: "iPhone15", category: "手机", basePrice: 5999 },
+            { id: 4, brandId: 2, name: "华为Mate60", category: "手机", basePrice: 4999 },
+            { id: 5, brandId: 2, name: "华为P60", category: "手机", basePrice: 4499 },
+            { id: 6, brandId: 3, name: "小米14", category: "手机", basePrice: 3999 },
+            { id: 7, brandId: 3, name: "小米13", category: "手机", basePrice: 3499 },
+            { id: 8, brandId: 4, name: "荣耀Magic6", category: "手机", basePrice: 4199 },
+            { id: 9, brandId: 5, name: "OPPO Find N3", category: "手机", basePrice: 6999 },
+            { id: 10, brandId: 6, name: "vivo X100", category: "手机", basePrice: 4999 },
+            { id: 11, brandId: 7, name: "三星Galaxy S24", category: "手机", basePrice: 6999 },
+            { id: 12, brandId: 8, name: "联想ThinkPad X1", category: "笔记本", basePrice: 12999 },
+            { id: 13, brandId: 1, name: "iPad Pro", category: "平板", basePrice: 8999 },
+            { id: 14, brandId: 1, name: "MacBook Pro", category: "笔记本", basePrice: 14999 },
+            { id: 15, brandId: 1, name: "AirPods Pro", category: "耳机", basePrice: 1999 },
+            { id: 16, brandId: 1, name: "Apple Watch Series 9", category: "手表", basePrice: 2999 },
+            { id: 17, brandId: 2, name: "华为FreeBuds Pro", category: "耳机", basePrice: 1299 },
+            { id: 18, brandId: 3, name: "小米手环8", category: "手环", basePrice: 299 },
+            { id: 19, brandId: 4, name: "荣耀X50", category: "手机", basePrice: 1399 },
+            { id: 20, brandId: 5, name: "一加12", category: "手机", basePrice: 4499 },
+            { id: 21, brandId: 6, name: "iQOO 12", category: "手机", basePrice: 3899 },
+            { id: 22, brandId: 7, name: "三星Galaxy Z Fold5", category: "折叠屏", basePrice: 13999 },
+            { id: 23, brandId: 8, name: "联想拯救者", category: "笔记本", basePrice: 7999 }
+        ];
+        
+        let categories = [
+            { id: 1, name: "手机", description: "智能手机" },
+            { id: 2, name: "平板", description: "平板电脑" },
+            { id: 3, name: "笔记本", description: "笔记本电脑" },
+            { id: 4, name: "耳机", description: "无线耳机" },
+            { id: 5, name: "手表", description: "智能手表" },
+            { id: 6, name: "手环", description: "智能手环" },
+            { id: 7, name: "折叠屏", description: "折叠屏手机" }
+        ];
+        
+        // 平台和店铺数据
+        let platforms = [
+            { id: 1, name: "京东", type: "线上" },
+            { id: 2, name: "天猫", type: "线上" },
+            { id: 3, name: "拼多多", type: "线上" },
+            { id: 4, name: "抖音", type: "线上" },
+            { id: 5, name: "线下", type: "线下" }
+        ];
+        
+        let stores = [
+            { id: 1, platformId: 1, name: "官方旗舰店", type: "官方旗舰店", description: "京东官方旗舰店" },
+            { id: 2, platformId: 2, name: "官方旗舰店", type: "官方旗舰店", description: "天猫官方旗舰店" },
+            { id: 3, platformId: 3, name: "第三方店铺", type: "第三方店铺", description: "拼多多第三方店铺" },
+            { id: 4, platformId: 4, name: "官方旗舰店", type: "官方旗舰店", description: "抖音官方旗舰店" },
+            { id: 5, platformId: 5, name: "直营店", type: "直营店", description: "线下直营店" },
+            { id: 6, platformId: 5, name: "体验店", type: "体验店", description: "线下体验店" }
+        ];
+        
+        // 当前编辑的项目ID
+        let currentEditId = null;
+        let currentEditType = null;
+        
+        // 页面加载时初始化
+        window.onload = function() {
+            renderBrandsList();
+            renderProductsList();
+            renderCategoriesList();
+            renderPlatformsList();
+            renderStoresList();
+            updateCounts();
+        };
+        
+        // 显示消息
+        function showMessage(message, type = 'success') {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
+            // 3秒后自动隐藏消息
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 3000);
+        }
+        
+        // 切换标签页
+        function showTab(tabId) {
+            // 隐藏所有标签页
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 移除所有导航标签的active类
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签页
+            document.getElementById(tabId).classList.add('active');
+            
+            // 激活对应的导航标签
+            event.target.classList.add('active');
+        }
+        
+        // 返回搜索页面
+        function goToSearch() {
+            window.location.href = 'search.html'; // 假设搜索页面名为search.html
+        }
+        
+        // 更新计数
+        function updateCounts() {
+            document.getElementById('brandCount').textContent = brands.length;
+            document.getElementById('productCount').textContent = products.length;
+            document.getElementById('categoryCount').textContent = categories.length;
+            document.getElementById('platformCount').textContent = platforms.length;
+            document.getElementById('storeCount').textContent = stores.length;
+            
+            // 更新品牌选择器
+            const brandSelect = document.getElementById('productBrand');
+            brandSelect.innerHTML = '<option value="">请选择品牌</option>';
+            brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand.id;
+                option.textContent = brand.name;
+                brandSelect.appendChild(option);
+            });
+            
+            // 更新平台选择器
+            const platformSelect = document.getElementById('storePlatform');
+            platformSelect.innerHTML = '<option value="">请选择平台</option>';
+            platforms.forEach(platform => {
+                const option = document.createElement('option');
+                option.value = platform.id;
+                option.textContent = platform.name;
+                platformSelect.appendChild(option);
+            });
+        }
+        
+        // 品牌管理相关函数
+        function showAddBrandForm() {
+            document.getElementById('addBrandForm').style.display = 'block';
+            document.getElementById('brandName').focus();
+        }
+        
+        function hideAddBrandForm() {
+            document.getElementById('addBrandForm').style.display = 'none';
+            document.getElementById('brandName').value = '';
+            document.getElementById('brandDescription').value = '';
+        }
+        
+        function addBrand() {
+            const name = document.getElementById('brandName').value.trim();
+            const description = document.getElementById('brandDescription').value.trim();
+            
+            if (!name) {
+                showMessage('请输入品牌名称', 'error');
+                return;
+            }
+            
+            if (currentEditId) {
+                // 编辑模式
+                const brandIndex = brands.findIndex(b => b.id === currentEditId);
+                if (brandIndex !== -1) {
+                    brands[brandIndex] = { ...brands[brandIndex], name: name, description: description };
+                    showMessage('品牌信息已更新');
+                    currentEditId = null;
+                    currentEditType = null;
+                }
+            } else {
+                // 添加模式
+                const newBrand = {
+                    id: Date.now(), // 使用时间戳作为唯一ID
+                    name: name,
+                    description: description
+                };
+                brands.push(newBrand);
+                showMessage('品牌添加成功');
+            }
+            
+            // 重置表单
+            hideAddBrandForm();
+            
+            // 重新渲染列表
+            renderBrandsList();
+            updateCounts();
+        }
+        
+        function editBrand(id) {
+            const brand = brands.find(b => b.id === id);
+            if (brand) {
+                document.getElementById('brandName').value = brand.name;
+                document.getElementById('brandDescription').value = brand.description;
+                showAddBrandForm();
+                currentEditId = id;
+                currentEditType = 'brand';
+            }
+        }
+        
+        function deleteBrand(id) {
+            if (confirm('确定要删除这个品牌吗？这将同时删除该品牌下的所有产品！')) {
+                // 删除品牌
+                brands = brands.filter(b => b.id !== id);
+                // 删除该品牌下的所有产品
+                products = products.filter(p => p.brandId !== id);
+                showMessage('品牌删除成功');
+                renderBrandsList();
+                renderProductsList();
+                updateCounts();
+            }
+        }
+        
+        function renderBrandsList() {
+            const container = document.getElementById('brandsList');
+            let html = '';
+            if (brands.length === 0) {
+                html = '<div style="padding: 20px; text-align: center; color: #6c757d;">暂无品牌数据</div>';
+            } else {
+                brands.forEach(brand => {
+                    html += `
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-brand">${brand.name}</div>
+                                <div class="product-name">${brand.description}</div>
+                            </div>
+                            <div class="product-actions">
+                                <button class="action-btn edit-btn" onclick="editBrand(${brand.id})">编辑</button>
+                                <button class="action-btn delete-btn" onclick="deleteBrand(${brand.id})">删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+        }
+        
+        // 产品管理相关函数
+        function showAddProductForm() {
+            document.getElementById('addProductForm').style.display = 'block';
+            document.getElementById('productName').focus();
+        }
+        
+        function hideAddProductForm() {
+            document.getElementById('addProductForm').style.display = 'none';
+            document.getElementById('productBrand').value = '';
+            document.getElementById('productName').value = '';
+            document.getElementById('productCategory').value = '';
+            document.getElementById('productBasePrice').value = '';
+        }
+        
+        function addProduct() {
+            const brandId = parseInt(document.getElementById('productBrand').value);
+            const name = document.getElementById('productName').value.trim();
+            const category = document.getElementById('productCategory').value.trim();
+            const basePrice = parseFloat(document.getElementById('productBasePrice').value);
+            
+            if (!brandId || !name || !category || !basePrice) {
+                showMessage('请填写完整的产品信息', 'error');
+                return;
+            }
+            
+            if (currentEditId && currentEditType === 'product') {
+                // 编辑模式
+                const productIndex = products.findIndex(p => p.id === currentEditId);
+                if (productIndex !== -1) {
+                    products[productIndex] = {
+                        ...products[productIndex],
+                        brandId: brandId,
+                        name: name,
+                        category: category,
+                        basePrice: basePrice
+                    };
+                    showMessage('产品信息已更新');
+                    currentEditId = null;
+                    currentEditType = null;
+                }
+            } else {
+                // 添加模式
+                const newProduct = {
+                    id: Date.now(),
+                    brandId: brandId,
+                    name: name,
+                    category: category,
+                    basePrice: basePrice
+                };
+                products.push(newProduct);
+                showMessage('产品添加成功');
+            }
+            
+            // 重置表单
+            hideAddProductForm();
+            
+            // 重新渲染列表
+            renderProductsList();
+            updateCounts();
+        }
+        
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                document.getElementById('productBrand').value = product.brandId;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productCategory').value = product.category;
+                document.getElementById('productBasePrice').value = product.basePrice;
+                showAddProductForm();
+                currentEditId = id;
+                currentEditType = 'product';
+            }
+        }
+        
+        function deleteProduct(id) {
+            if (confirm('确定要删除这个产品吗？')) {
+                products = products.filter(p => p.id !== id);
+                showMessage('产品删除成功');
+                renderProductsList();
+                updateCounts();
+            }
+        }
+        
+        function renderProductsList() {
+            const container = document.getElementById('productsList');
+            let html = '';
+            if (products.length === 0) {
+                html = '<div style="padding: 20px; text-align: center; color: #6c757d;">暂无产品数据</div>';
+            } else {
+                products.forEach(product => {
+                    const brand = brands.find(b => b.id === product.brandId);
+                    html += `
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-brand">${brand ? brand.name : '未知品牌'}</div>
+                                <div class="product-name">${product.name} (${product.category}) - ¥${product.basePrice}</div>
+                            </div>
+                            <div class="product-actions">
+                                <button class="action-btn edit-btn" onclick="editProduct(${product.id})">编辑</button>
+                                <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})">删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+        }
+        
+        // 品类管理相关函数
+        function showAddCategoryForm() {
+            document.getElementById('addCategoryForm').style.display = 'block';
+            document.getElementById('categoryName').focus();
+        }
+        
+        function hideAddCategoryForm() {
+            document.getElementById('addCategoryForm').style.display = 'none';
+            document.getElementById('categoryName').value = '';
+            document.getElementById('categoryDescription').value = '';
+        }
+        
+        function addCategory() {
+            const name = document.getElementById('categoryName').value.trim();
+            const description = document.getElementById('categoryDescription').value.trim();
+            
+            if (!name) {
+                showMessage('请输入品类名称', 'error');
+                return;
+            }
+            
+            if (currentEditId && currentEditType === 'category') {
+                // 编辑模式
+                const categoryIndex = categories.findIndex(c => c.id === currentEditId);
+                if (categoryIndex !== -1) {
+                    categories[categoryIndex] = { ...categories[categoryIndex], name: name, description: description };
+                    showMessage('品类信息已更新');
+                    currentEditId = null;
+                    currentEditType = null;
+                }
+            } else {
+                // 添加模式
+                const newCategory = {
+                    id: Date.now(),
+                    name: name,
+                    description: description
+                };
+                categories.push(newCategory);
+                showMessage('品类添加成功');
+            }
+            
+            // 重置表单
+            hideAddCategoryForm();
+            
+            // 重新渲染列表
+            renderCategoriesList();
+            updateCounts();
+        }
+        
+        function editCategory(id) {
+            const category = categories.find(c => c.id === id);
+            if (category) {
+                document.getElementById('categoryName').value = category.name;
+                document.getElementById('categoryDescription').value = category.description;
+                showAddCategoryForm();
+                currentEditId = id;
+                currentEditType = 'category';
+            }
+        }
+        
+        function deleteCategory(id) {
+            if (confirm('确定要删除这个品类吗？')) {
+                categories = categories.filter(c => c.id !== id);
+                showMessage('品类删除成功');
+                renderCategoriesList();
+                updateCounts();
+            }
+        }
+        
+        function renderCategoriesList() {
+            const container = document.getElementById('categoriesList');
+            let html = '';
+            if (categories.length === 0) {
+                html = '<div style="padding: 20px; text-align: center; color: #6c757d;">暂无品类数据</div>';
+            } else {
+                categories.forEach(category => {
+                    html += `
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-brand">${category.name}</div>
+                                <div class="product-name">${category.description}</div>
+                            </div>
+                            <div class="product-actions">
+                                <button class="action-btn edit-btn" onclick="editCategory(${category.id})">编辑</button>
+                                <button class="action-btn delete-btn" onclick="deleteCategory(${category.id})">删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+        }
+        
+        // 平台管理相关函数
+        function showAddPlatformForm() {
+            document.getElementById('addPlatformForm').style.display = 'block';
+            document.getElementById('platformName').focus();
+        }
+        
+        function hideAddPlatformForm() {
+            document.getElementById('addPlatformForm').style.display = 'none';
+            document.getElementById('platformName').value = '';
+            document.getElementById('platformType').value = '线上';
+        }
+        
+        function addPlatform() {
+            const name = document.getElementById('platformName').value.trim();
+            const type = document.getElementById('platformType').value;
+            
+            if (!name) {
+                showMessage('请输入平台名称', 'error');
+                return;
+            }
+            
+            if (currentEditId && currentEditType === 'platform') {
+                // 编辑模式
+                const platformIndex = platforms.findIndex(p => p.id === currentEditId);
+                if (platformIndex !== -1) {
+                    platforms[platformIndex] = { ...platforms[platformIndex], name: name, type: type };
+                    showMessage('平台信息已更新');
+                    currentEditId = null;
+                    currentEditType = null;
+                }
+            } else {
+                // 添加模式
+                const newPlatform = {
+                    id: Date.now(),
+                    name: name,
+                    type: type
+                };
+                platforms.push(newPlatform);
+                showMessage('平台添加成功');
+            }
+            
+            // 重置表单
+            hideAddPlatformForm();
+            
+            // 重新渲染列表
+            renderPlatformsList();
+            updateCounts();
+        }
+        
+        function editPlatform(id) {
+            const platform = platforms.find(p => p.id === id);
+            if (platform) {
+                document.getElementById('platformName').value = platform.name;
+                document.getElementById('platformType').value = platform.type;
+                showAddPlatformForm();
+                currentEditId = id;
+                currentEditType = 'platform';
+            }
+        }
+        
+        function deletePlatform(id) {
+            if (confirm('确定要删除这个平台吗？这将同时删除该平台下的所有店铺！')) {
+                // 删除平台
+                platforms = platforms.filter(p => p.id !== id);
+                // 删除该平台下的所有店铺
+                stores = stores.filter(s => s.platformId !== id);
+                showMessage('平台删除成功');
+                renderPlatformsList();
+                renderStoresList();
+                updateCounts();
+            }
+        }
+        
+        function renderPlatformsList() {
+            const container = document.getElementById('platformsList');
+            let html = '';
+            if (platforms.length === 0) {
+                html = '<div style="padding: 20px; text-align: center; color: #6c757d;">暂无平台数据</div>';
+            } else {
+                platforms.forEach(platform => {
+                    html += `
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-brand">${platform.name}</div>
+                                <div class="product-name">${platform.type}</div>
+                            </div>
+                            <div class="product-actions">
+                                <button class="action-btn edit-btn" onclick="editPlatform(${platform.id})">编辑</button>
+                                <button class="action-btn delete-btn" onclick="deletePlatform(${platform.id})">删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+        }
+        
+        // 店铺管理相关函数
+        function showAddStoreForm() {
+            document.getElementById('addStoreForm').style.display = 'block';
+            document.getElementById('storeName').focus();
+        }
+        
+        function hideAddStoreForm() {
+            document.getElementById('addStoreForm').style.display = 'none';
+            document.getElementById('storePlatform').value = '';
+            document.getElementById('storeName').value = '';
+            document.getElementById('storeType').value = '官方旗舰店';
+            document.getElementById('storeDescription').value = '';
+        }
+        
+        function addStore() {
+            const platformId = parseInt(document.getElementById('storePlatform').value);
+            const name = document.getElementById('storeName').value.trim();
+            const type = document.getElementById('storeType').value;
+            const description = document.getElementById('storeDescription').value.trim();
+            
+            if (!platformId || !name || !type) {
+                showMessage('请填写完整的店铺信息', 'error');
+                return;
+            }
+            
+            if (currentEditId && currentEditType === 'store') {
+                // 编辑模式
+                const storeIndex = stores.findIndex(s => s.id === currentEditId);
+                if (storeIndex !== -1) {
+                    stores[storeIndex] = {
+                        ...stores[storeIndex],
+                        platformId: platformId,
+                        name: name,
+                        type: type,
+                        description: description
+                    };
+                    showMessage('店铺信息已更新');
+                    currentEditId = null;
+                    currentEditType = null;
+                }
+            } else {
+                // 添加模式
+                const newStore = {
+                    id: Date.now(),
+                    platformId: platformId,
+                    name: name,
+                    type: type,
+                    description: description
+                };
+                stores.push(newStore);
+                showMessage('店铺添加成功');
+            }
+            
+            // 重置表单
+            hideAddStoreForm();
+            
+            // 重新渲染列表
+            renderStoresList();
+            updateCounts();
+        }
+        
+        function editStore(id) {
+            const store = stores.find(s => s.id === id);
+            if (store) {
+                document.getElementById('storePlatform').value = store.platformId;
+                document.getElementById('storeName').value = store.name;
+                document.getElementById('storeType').value = store.type;
+                document.getElementById('storeDescription').value = store.description;
+                showAddStoreForm();
+                currentEditId = id;
+                currentEditType = 'store';
+            }
+        }
+        
+        function deleteStore(id) {
+            if (confirm('确定要删除这个店铺吗？')) {
+                stores = stores.filter(s => s.id !== id);
+                showMessage('店铺删除成功');
+                renderStoresList();
+                updateCounts();
+            }
+        }
+        
+        function renderStoresList() {
+            const container = document.getElementById('storesList');
+            let html = '';
+            if (stores.length === 0) {
+                html = '<div style="padding: 20px; text-align: center; color: #6c757d;">暂无店铺数据</div>';
+            } else {
+                stores.forEach(store => {
+                    const platform = platforms.find(p => p.id === store.platformId);
+                    html += `
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-brand">${platform ? platform.name : '未知平台'} - ${store.name}</div>
+                                <div class="product-name">${store.type} - ${store.description}</div>
+                            </div>
+                            <div class="product-actions">
+                                <button class="action-btn edit-btn" onclick="editStore(${store.id})">编辑</button>
+                                <button class="action-btn delete-btn" onclick="deleteStore(${store.id})">删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
